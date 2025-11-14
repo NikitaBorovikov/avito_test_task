@@ -8,6 +8,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	getTeamQueryParam = "team_name"
+)
+
 func (h *Handlers) CreateTeam(w http.ResponseWriter, r *http.Request) {
 	req, err := decodeCreateTeamRequest(r)
 	if err != nil {
@@ -30,7 +34,17 @@ func (h *Handlers) CreateTeam(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) GetTeamByName(w http.ResponseWriter, r *http.Request) {
+	teamName := r.URL.Query().Get(getTeamQueryParam)
 
+	team, err := h.TeamUC.GetByName(teamName)
+	if err != nil {
+		// TODO: handle err
+		logrus.Errorf("failed to get team: %v", err)
+		return
+	}
+
+	resp := dto.NewGetTeamByNameResponse(team)
+	sendOkResponse(w, r, http.StatusOK, resp)
 }
 
 func decodeCreateTeamRequest(r *http.Request) (*dto.CreateTeamRequest, error) {

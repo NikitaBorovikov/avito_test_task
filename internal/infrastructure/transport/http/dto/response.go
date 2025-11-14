@@ -44,6 +44,18 @@ type PullRequestShort struct {
 	Status          models.PRStatus `json:"status"`
 }
 
+type CreatePRResponse struct {
+	PullRequest PullRequest `json:"pr"`
+}
+
+type PullRequest struct {
+	PullRequestID     string          `json:"pull_request_id"`
+	PullRequestName   string          `json:"pull_request_name"`
+	AuthorID          string          `json:"author_id"`
+	Status            models.PRStatus `json:"status"`
+	AssignedReviewers []string        `json:"assigned_reviewers"`
+}
+
 func NewErrorResponse(code, msg string) ErrorResponse {
 	return ErrorResponse{
 		Code:    code,
@@ -124,6 +136,22 @@ func NewSetUserActiveResponse(teamName string, user *models.User) *SetUserActive
 			Username: user.Name,
 			TeamName: teamName,
 			IsActive: user.IsActive,
+		},
+	}
+}
+
+func NewCreatePRResponse(pr *models.PullRequest) *CreatePRResponse {
+	if pr == nil {
+		return nil
+	}
+
+	return &CreatePRResponse{
+		PullRequest: PullRequest{
+			PullRequestID:     pr.ID,
+			PullRequestName:   pr.Title,
+			AuthorID:          pr.AuthorID,
+			Status:            pr.Status,
+			AssignedReviewers: pr.Reviewers,
 		},
 	}
 }

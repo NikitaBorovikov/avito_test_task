@@ -39,8 +39,7 @@ func (r *TeamRepo) Create(team *models.Team) (*models.Team, error) {
 
 func (r *TeamRepo) GetByName(name string) (*models.Team, error) {
 	var team models.Team
-	err := r.db.Preload("Users").Where("name = ?", name).First(&team).Error
-	if err != nil {
+	if err := r.db.Preload("Users").Where("name = ?", name).First(&team).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrTeamNotFound
 		}
@@ -50,11 +49,14 @@ func (r *TeamRepo) GetByName(name string) (*models.Team, error) {
 }
 
 func (r *TeamRepo) Delete(teamID uint) error {
-	res := r.db.Where("id = ?", teamID).Delete(&models.Team{})
-	if res.RowsAffected == 0 {
+	result := r.db.Where("id = ?", teamID).Delete(&models.Team{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
 		return ErrTeamNotFound
 	}
-	return res.Error
+	return nil
 }
 
 func isDuplicateError(err error) bool {

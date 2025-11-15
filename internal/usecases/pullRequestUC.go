@@ -81,15 +81,6 @@ func (uc *PullRequestUC) Reassign(prID, oldUserID string) (*models.PullRequest, 
 	return updatedPR, nil
 }
 
-func isUserInReviewers(userID string, reviewers []string) bool {
-	for _, id := range reviewers {
-		if id == userID {
-			return true
-		}
-	}
-	return false
-}
-
 func (uc *PullRequestUC) findRandomReplacement(authorID string, teamID uint, existingRev []string) (string, error) {
 	activeUsers, err := uc.UserRepo.GetActiveUsersByTeam(teamID)
 	if err != nil {
@@ -131,4 +122,13 @@ func (uc *PullRequestUC) setReviewers(teamID uint, authorID string) ([]string, e
 	})
 	maxReviewers := min(2, len(candidates))
 	return candidates[:maxReviewers], nil
+}
+
+func isUserInReviewers(userID string, reviewers []string) bool {
+	for _, id := range reviewers {
+		if id == userID {
+			return true
+		}
+	}
+	return false
 }

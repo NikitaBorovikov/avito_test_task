@@ -17,6 +17,10 @@ func (r *UserRepo) GetByID(userID string) (*models.User, error) {
 	return nil, nil
 }
 
+func (r *UserRepo) GetActiveUsersByTeam(teamID uint) ([]models.User, error) {
+	return nil, nil
+}
+
 func (uc *UserRepo) SetUserActive(userID string, isActive bool) (*models.User, error) {
 	return nil, nil
 }

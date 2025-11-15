@@ -12,6 +12,6 @@ func NewUseCases(userRepo repository.UserRepo, teamRepo repository.TeamRepo, prR
 	return &UseCases{
 		UserUC:        NewUserUC(userRepo),
 		TeamUC:        NewTeamUC(teamRepo, userRepo),
-		PullRequestUC: NewPullRequestUC(prRepo),
+		PullRequestUC: NewPullRequestUC(prRepo, userRepo),
 	}
 }

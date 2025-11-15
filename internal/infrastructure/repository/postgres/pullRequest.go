@@ -17,10 +17,14 @@ func (r *PullRequestRepo) GetByReviewer(userID string) ([]models.PullRequest, er
 	return nil, nil
 }
 
+func (r *PullRequestRepo) GetByID(prID string) (*models.PullRequest, error) {
+	return nil, nil
+}
+
 func (r *PullRequestRepo) Merge(prID string) (*models.PullRequest, error) {
 	return nil, nil
 }
 
-func (r *PullRequestRepo) Reassign(prID, oldUserID string) (*models.PullRequest, error) {
+func (r *PullRequestRepo) Reassign(prID, oldReviewerID, newReviewerID string) (*models.PullRequest, error) {
 	return nil, nil
 }

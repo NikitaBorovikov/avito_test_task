@@ -45,7 +45,7 @@ type MergePRRequest struct {
 
 type ReassignPRRequest struct {
 	PullRequestID string `json:"pull_request_id"`
-	OldUserID     string `json:"old_reviewer_id"`
+	OldUserID     string `json:"old_user_id"`
 }
 
 func (r *CreatePRRequest) ToDomainPR() models.PullRequest {

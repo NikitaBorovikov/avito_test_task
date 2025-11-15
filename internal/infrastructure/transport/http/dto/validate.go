@@ -61,6 +61,16 @@ func (r *MergePRRequest) Validate() error {
 	return ValidatePRID(r.PullRequestID)
 }
 
+func (r *ReassignPRRequest) Validate() error {
+	if err := ValidatePRID(r.PullRequestID); err != nil {
+		return err
+	}
+	if err := ValidateUserID(r.OldUserID); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *Member) Validate() error {
 	if err := ValidateUserID(m.UserID); err != nil {
 		return err

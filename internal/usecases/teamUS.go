@@ -41,5 +41,5 @@ func (uc *TeamUC) Create(team *models.Team) (*models.Team, error) {
 }
 
 func (uc *TeamUC) GetByName(name string) (*models.Team, error) {
-	return nil, nil
+	return uc.TeamRepo.GetByName(name)
 }

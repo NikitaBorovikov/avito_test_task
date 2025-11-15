@@ -4,7 +4,6 @@ import (
 	"avitoTestTask/internal/core/models"
 	"errors"
 
-	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -29,7 +28,7 @@ func NewTeamRepo(db *gorm.DB) *TeamRepo {
 
 func (r *TeamRepo) Create(team *models.Team) (*models.Team, error) {
 	if err := r.db.Create(team).Error; err != nil {
-		if isDuplicateError(err) {
+		if isDublicateError(err) {
 			return nil, ErrDublicateTeamName
 		}
 		return nil, err
@@ -57,12 +56,4 @@ func (r *TeamRepo) Delete(teamID uint) error {
 		return ErrTeamNotFound
 	}
 	return nil
-}
-
-func isDuplicateError(err error) bool {
-	var pqErr *pq.Error
-	if errors.As(err, &pqErr) {
-		return pqErr.Code == PostgresUniqueErrorCode
-	}
-	return false
 }

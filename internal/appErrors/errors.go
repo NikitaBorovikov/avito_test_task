@@ -12,12 +12,15 @@ const (
 	ErrorCodeNotFound    = "NOT_FOUND"
 
 	ErrorTeamExistsMsg = "team with that name already exists"
+	ErrorPRIDExistsMsg = "pull request with this ID already exists"
 )
 
 func HandleError(err error) (string, string) {
 	switch err {
 	case postgres.ErrDublicateTeamName:
 		return ErrorCodeTeamExists, ErrorTeamExistsMsg
+	case postgres.ErrDublicatePRID:
+		return ErrorCodeTeamExists, ErrorPRIDExistsMsg
 	default:
 		return ErrorCodeNotFound, err.Error()
 	}

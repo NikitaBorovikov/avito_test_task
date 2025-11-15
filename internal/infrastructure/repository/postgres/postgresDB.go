@@ -1,6 +1,11 @@
 package postgres
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"github.com/lib/pq"
+	"gorm.io/gorm"
+)
 
 type PostgresRepo struct {
 	UserRepo        *UserRepo
@@ -14,4 +19,12 @@ func NewPostgresRepo(db *gorm.DB) *PostgresRepo {
 		TeamRepo:        NewTeamRepo(db),
 		PullRequestRepo: NewPullRequestRepo(db),
 	}
+}
+
+func isDublicateError(err error) bool {
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) {
+		return pqErr.Code == PostgresUniqueErrorCode
+	}
+	return false
 }

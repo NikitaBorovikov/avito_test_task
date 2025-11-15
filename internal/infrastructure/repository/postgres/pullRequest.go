@@ -2,8 +2,13 @@ package postgres
 
 import (
 	"avitoTestTask/internal/core/models"
+	"errors"
 
 	"gorm.io/gorm"
+)
+
+var (
+	ErrDublicatePRID = errors.New("pull request with this ID already exists")
 )
 
 type PullRequestRepo struct {
@@ -17,7 +22,13 @@ func NewPullRequestRepo(db *gorm.DB) *PullRequestRepo {
 }
 
 func (r *PullRequestRepo) Create(pr *models.PullRequest) (*models.PullRequest, error) {
-	return nil, nil
+	if err := r.db.Create(pr).Error; err != nil {
+		if isDublicateError(err) {
+			return nil, ErrDublicatePRID
+		}
+		return nil, err
+	}
+	return pr, nil
 }
 
 func (r *PullRequestRepo) GetByReviewer(userID string) ([]models.PullRequest, error) {

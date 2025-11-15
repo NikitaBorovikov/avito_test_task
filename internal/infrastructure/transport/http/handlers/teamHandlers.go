@@ -20,9 +20,14 @@ func (h *Handlers) CreateTeam(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	team := req.ToDomainTeam()
+	if err := req.Validate(); err != nil {
+		logrus.Errorf("validate error: %v", err)
+		sendErrorResponse(w, r, http.StatusBadRequest, "NOT_FOUND", err.Error())
+		return
+	}
 
-	res, err := h.TeamUC.Create(&team)
+	team := req.ToDomainTeam()
+	res, err := h.TeamUC.Create(team)
 	if err != nil {
 		// TODO: добавить обработку ошибок
 		logrus.Errorf("failed to create team: %v", err)

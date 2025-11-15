@@ -26,8 +26,22 @@ func NewPullRequestUC(pullRequestRepo repository.PullRequestRepo, userRepo repos
 }
 
 func (uc *PullRequestUC) Create(pr *models.PullRequest) (*models.PullRequest, error) {
-	// При создании PR автоматически назначаются до двух активных ревьюверов из команды автора, исключая самого автора.
-	return uc.PullRequestRepo.Create(pr)
+	author, err := uc.UserRepo.GetByID(pr.AuthorID)
+	if err != nil {
+		return nil, err
+	}
+
+	reviewers, err := uc.setReviewers(author.TeamID, author.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	pr.Reviewers = reviewers
+	updatedPR, err := uc.PullRequestRepo.Create(pr)
+	if err != nil {
+		return nil, err
+	}
+	return updatedPR, nil
 }
 
 func (uc *PullRequestUC) GetByReviewer(userID string) ([]models.PullRequest, error) {
@@ -82,7 +96,7 @@ func (uc *PullRequestUC) findRandomReplacement(authorID string, teamID uint, exi
 		return "", err
 	}
 
-	candidates := make([]string, 0, 2)
+	candidates := make([]string, 0, len(activeUsers))
 	for _, user := range activeUsers {
 		if user.ID != authorID && !isUserInReviewers(user.ID, existingRev) {
 			candidates = append(candidates, user.ID)
@@ -93,4 +107,28 @@ func (uc *PullRequestUC) findRandomReplacement(authorID string, teamID uint, exi
 		return "", ErrNoCandidate
 	}
 	return candidates[rand.Intn(len(candidates))], nil
+}
+
+func (uc *PullRequestUC) setReviewers(teamID uint, authorID string) ([]string, error) {
+	activeUsers, err := uc.UserRepo.GetActiveUsersByTeam(teamID)
+	if err != nil {
+		return nil, err
+	}
+
+	candidates := make([]string, 0, len(activeUsers))
+	for _, user := range activeUsers {
+		if user.ID != authorID {
+			candidates = append(candidates, user.ID)
+		}
+	}
+
+	if len(candidates) == 0 {
+		return nil, ErrNoCandidate
+	}
+
+	rand.Shuffle(len(candidates), func(i, j int) {
+		candidates[i], candidates[j] = candidates[j], candidates[i]
+	})
+	maxReviewers := min(2, len(candidates))
+	return candidates[:maxReviewers], nil
 }

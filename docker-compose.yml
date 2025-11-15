@@ -1,0 +1,62 @@
+version: '3'
+services:
+  app:
+    container_name: server
+    build: .
+    ports:
+      - 8080:8080
+    restart: on-failure
+    volumes:
+      - api:/usr/src/app/
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fullstack
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+
+  postgres:
+    image: postgres:13
+    container_name: full_db_postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+    networks:
+      - fullstack
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    depends_on:
+      - postgres
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@example.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin}
+    ports:
+      - 9090:80
+    restart: always
+    networks:
+      - fullstack
+
+volumes:
+  api:
+  database_postgres:
+
+networks:
+  fullstack:
+    driver: bridge

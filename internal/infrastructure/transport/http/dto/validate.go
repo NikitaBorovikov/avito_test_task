@@ -33,6 +33,13 @@ func (r *CreateTeamRequest) Validate() error {
 	return nil
 }
 
+func (r *SetUserActiveRequest) Validate() error {
+	if err := ValidateUserID(r.UserID); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m *Member) Validate() error {
 	if err := ValidateUserID(m.UserID); err != nil {
 		return err

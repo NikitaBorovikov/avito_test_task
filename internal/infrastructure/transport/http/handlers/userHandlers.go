@@ -39,6 +39,12 @@ func (h *Handlers) SetUserActive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := req.Validate(); err != nil {
+		logrus.Errorf("validate error: %v", err)
+		sendErrorResponse(w, r, http.StatusBadRequest, "NOT_FOUND", err.Error())
+		return
+	}
+
 	user, err := h.UserUC.SetUserActive(req.UserID, req.IsActive)
 	if err != nil {
 		// TODO: handle errors

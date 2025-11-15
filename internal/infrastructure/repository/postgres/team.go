@@ -2,8 +2,19 @@ package postgres
 
 import (
 	"avitoTestTask/internal/core/models"
+	"errors"
 
+	"github.com/lib/pq"
 	"gorm.io/gorm"
+)
+
+const (
+	PostgresUniqueErrorCode = "23505"
+)
+
+var (
+	ErrDublicateTeamName = errors.New("team with that name already exists")
+	ErrTeamNotFound      = errors.New("team with this ID is not found")
 )
 
 type TeamRepo struct {
@@ -17,7 +28,13 @@ func NewTeamRepo(db *gorm.DB) *TeamRepo {
 }
 
 func (r *TeamRepo) Create(team *models.Team) (*models.Team, error) {
-	return nil, nil
+	if err := r.db.Create(team).Error; err != nil {
+		if isDuplicateError(err) {
+			return nil, ErrDublicateTeamName
+		}
+		return nil, err
+	}
+	return team, nil
 }
 
 func (r *TeamRepo) GetByName(name string) (*models.Team, error) {
@@ -25,5 +42,17 @@ func (r *TeamRepo) GetByName(name string) (*models.Team, error) {
 }
 
 func (r *TeamRepo) Delete(teamID uint) error {
-	return nil
+	res := r.db.Where("id = ?", teamID).Delete(&models.Team{})
+	if res.RowsAffected == 0 {
+		return ErrTeamNotFound
+	}
+	return res.Error
+}
+
+func isDuplicateError(err error) bool {
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) {
+		return pqErr.Code == PostgresUniqueErrorCode
+	}
+	return false
 }

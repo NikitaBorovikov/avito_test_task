@@ -30,8 +30,9 @@ func (h *Handlers) CreateTeam(w http.ResponseWriter, r *http.Request) {
 	team := req.ToDomainTeam()
 	res, err := h.TeamUC.Create(team)
 	if err != nil {
-		// TODO: добавить обработку ошибок
 		logrus.Errorf("failed to create team: %v", err)
+		errCode, errMsg := apperrors.GetAPIErrorCode(err)
+		sendErrorResponse(w, r, http.StatusBadRequest, errCode, errMsg)
 		return
 	}
 

@@ -16,8 +16,9 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 	}
 }
 
+// Если пользователь уже сущесвует, то обновляем его данные. Если не сущесвует - создаем
 func (r *UserRepo) CreateOrUpdate(user *models.User) error {
-	return nil
+	return r.db.Save(user).Error
 }
 
 func (r *UserRepo) GetByID(userID string) (*models.User, error) {

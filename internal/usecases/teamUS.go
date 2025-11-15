@@ -21,7 +21,6 @@ func NewTeamUC(teamRepo repository.TeamRepo, userRepo repository.UserRepo) *Team
 func (uc *TeamUC) Create(team *models.Team) (*models.Team, error) {
 	createdTeam, err := uc.TeamRepo.Create(team)
 	if err != nil {
-		// TODO: Проверка на дубликат
 		return nil, err
 	}
 
@@ -29,9 +28,7 @@ func (uc *TeamUC) Create(team *models.Team) (*models.Team, error) {
 		user := &team.Users[i]
 		user.TeamID = createdTeam.ID
 
-		// Create or update user
 		if err := uc.UserRepo.CreateOrUpdate(user); err != nil {
-			// При удалении команды каскадно удаляться все ее учатники
 			if err := uc.TeamRepo.Delete(createdTeam.ID); err != nil {
 				return nil, fmt.Errorf("failed to save user and rollback team: %v", err)
 			}

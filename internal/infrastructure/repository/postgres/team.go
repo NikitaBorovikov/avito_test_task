@@ -16,3 +16,7 @@ func (r *TeamRepo) Create(team *models.Team) (*models.Team, error) {
 func (r *TeamRepo) GetByName(name string) (*models.Team, error) {
 	return nil, nil
 }
+
+func (r *TeamRepo) Delete(teamID uint) error {
+	return nil
+}

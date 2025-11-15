@@ -1,7 +1,7 @@
 package models
 
 type Team struct {
-	ID    string
+	ID    uint
 	Name  string
 	Users []User
 }

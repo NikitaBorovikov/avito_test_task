@@ -11,7 +11,7 @@ type UseCases struct {
 func NewUseCases(userRepo repository.UserRepo, teamRepo repository.TeamRepo, prRepo repository.PullRequestRepo) *UseCases {
 	return &UseCases{
 		UserUC:        NewUserUC(userRepo),
-		TeamUC:        NewTeamUC(teamRepo),
+		TeamUC:        NewTeamUC(teamRepo, userRepo),
 		PullRequestUC: NewPullRequestUC(prRepo),
 	}
 }

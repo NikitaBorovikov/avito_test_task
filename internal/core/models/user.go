@@ -3,6 +3,6 @@ package models
 type User struct {
 	ID       string
 	Name     string
-	TeamID   string
+	TeamID   uint
 	IsActive bool
 }

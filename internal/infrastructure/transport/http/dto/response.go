@@ -129,7 +129,7 @@ func NewMergePRResponse(pr *models.PullRequest) *MergePRResponse {
 			AuthorID:          pr.AuthorID,
 			Status:            pr.Status,
 			AssignedReviewers: pr.Reviewers,
-			MergedAt:          pr.MergedAt,
+			MergedAt:          *pr.MergedAt,
 		},
 	}
 }

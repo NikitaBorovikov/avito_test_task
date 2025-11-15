@@ -16,8 +16,13 @@ func (h *Handlers) CreatePullRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pr := req.ToDomainPR()
+	if err := req.Validate(); err != nil {
+		logrus.Errorf("validate error: %v", err)
+		sendErrorResponse(w, r, http.StatusBadRequest, "NOT_FOUND", err.Error())
+		return
+	}
 
+	pr := req.ToDomainPR()
 	pullRequest, err := h.PullRequestUC.Create(&pr)
 	if err != nil {
 		// TODO: handle errors

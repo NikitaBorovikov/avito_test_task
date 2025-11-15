@@ -31,7 +31,7 @@ func (h *Handlers) CreateTeam(w http.ResponseWriter, r *http.Request) {
 	res, err := h.TeamUC.Create(team)
 	if err != nil {
 		logrus.Errorf("failed to create team: %v", err)
-		errCode, errMsg := apperrors.GetAPIErrorCode(err)
+		errCode, errMsg := apperrors.HandleError(err)
 		sendErrorResponse(w, r, http.StatusBadRequest, errCode, errMsg)
 		return
 	}
@@ -51,8 +51,9 @@ func (h *Handlers) GetTeamByName(w http.ResponseWriter, r *http.Request) {
 
 	team, err := h.TeamUC.GetByName(teamName)
 	if err != nil {
-		// TODO: handle err
 		logrus.Errorf("failed to get team: %v", err)
+		errCode, errMsg := apperrors.HandleError(err)
+		sendErrorResponse(w, r, http.StatusBadRequest, errCode, errMsg)
 		return
 	}
 

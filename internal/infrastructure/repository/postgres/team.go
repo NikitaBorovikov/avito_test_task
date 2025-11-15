@@ -38,7 +38,15 @@ func (r *TeamRepo) Create(team *models.Team) (*models.Team, error) {
 }
 
 func (r *TeamRepo) GetByName(name string) (*models.Team, error) {
-	return nil, nil
+	var team models.Team
+	err := r.db.Preload("Users").Where("name = ?", name).First(&team).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrTeamNotFound
+		}
+		return nil, err
+	}
+	return &team, nil
 }
 
 func (r *TeamRepo) Delete(teamID uint) error {

@@ -41,6 +41,16 @@ func (r *UserRepo) GetActiveUsersByTeam(teamID uint) ([]models.User, error) {
 	return nil, nil
 }
 
-func (uc *UserRepo) SetUserActive(userID string, isActive bool) (*models.User, error) {
-	return nil, nil
+func (r *UserRepo) SetUserActive(userID string, isActive bool) (*models.User, error) {
+	result := r.db.Model(&models.User{}).Where("id = ?", userID).Update("is_active", isActive)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, ErrUserNotFound
+	}
+
+	updatedUser, err := r.GetByID(userID)
+	return updatedUser, err
 }

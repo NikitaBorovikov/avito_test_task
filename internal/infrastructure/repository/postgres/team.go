@@ -43,6 +43,17 @@ func (r *TeamRepo) GetByName(name string) (*models.Team, error) {
 	return &team, nil
 }
 
+func (r *TeamRepo) GetByID(teamID uint) (*models.Team, error) {
+	var team models.Team
+	if err := r.db.Where("id = ?", teamID).First(&team).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+	return &team, nil
+}
+
 func (r *TeamRepo) Delete(teamID uint) error {
 	result := r.db.Where("id = ?", teamID).Delete(&models.Team{})
 	if result.Error != nil {

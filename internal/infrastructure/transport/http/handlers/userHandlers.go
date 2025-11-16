@@ -56,9 +56,15 @@ func (h *Handlers) SetUserActive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get team name from DB !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11
-	teamName := "backend"
-	resp := dto.NewSetUserActiveResponse(teamName, user)
+	userTeam, err := h.TeamUC.TeamRepo.GetByID(user.TeamID)
+	if err != nil {
+		logrus.Errorf("failed to get user's team: %v", err)
+		errCode, errMsg := apperrors.HandleError(err)
+		sendErrorResponse(w, r, http.StatusBadRequest, errCode, errMsg)
+		return
+	}
+
+	resp := dto.NewSetUserActiveResponse(userTeam.Name, user)
 	sendOkResponse(w, r, http.StatusOK, resp)
 }
 

@@ -51,7 +51,7 @@ type ReassignPRRequest struct {
 func (r *CreatePRRequest) ToDomainPR() models.PullRequest {
 	return models.PullRequest{
 		ID:       r.PullRequestID,
-		Title:    r.PullRequestName,
+		Name:     r.PullRequestName,
 		AuthorID: r.AuthorID,
 		Status:   models.PRStatusOpen, //по умолчанию статус Open
 	}

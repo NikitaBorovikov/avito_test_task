@@ -110,7 +110,7 @@ func NewCreatePRResponse(pr *models.PullRequest) *CreatePRResponse {
 	return &CreatePRResponse{
 		PullRequest: PullRequest{
 			PullRequestID:     pr.ID,
-			PullRequestName:   pr.Title,
+			PullRequestName:   pr.Name,
 			AuthorID:          pr.AuthorID,
 			Status:            pr.Status,
 			AssignedReviewers: pr.Reviewers,
@@ -125,7 +125,7 @@ func NewMergePRResponse(pr *models.PullRequest) *MergePRResponse {
 	return &MergePRResponse{
 		PullRequest: PullRequest{
 			PullRequestID:     pr.ID,
-			PullRequestName:   pr.Title,
+			PullRequestName:   pr.Name,
 			AuthorID:          pr.AuthorID,
 			Status:            pr.Status,
 			AssignedReviewers: pr.Reviewers,
@@ -141,7 +141,7 @@ func NewReassignPRResponse(pr *models.PullRequest) *ReassignPRResponse {
 	return &ReassignPRResponse{
 		PullRequest: PullRequest{
 			PullRequestID:     pr.ID,
-			PullRequestName:   pr.Title,
+			PullRequestName:   pr.Name,
 			AuthorID:          pr.AuthorID,
 			Status:            pr.Status,
 			AssignedReviewers: pr.Reviewers,
@@ -172,7 +172,7 @@ func NewGetUserReviewPRResponse(userID string, prs []models.PullRequest) *GetUse
 	for _, p := range prs {
 		pullRequest := PullRequestShort{
 			PullRequestID:   p.ID,
-			PullRequestName: p.Title,
+			PullRequestName: p.Name,
 			AuthorID:        p.AuthorID,
 			Status:          p.Status,
 		}

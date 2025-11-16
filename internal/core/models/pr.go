@@ -11,7 +11,7 @@ const (
 
 type PullRequest struct {
 	ID        string     `gorm:"primaryKey;type:varchar(100)"`
-	Title     string     `gorm:"type:varchar(500);not null"`
+	Name      string     `gorm:"type:varchar(500);not null"`
 	Status    PRStatus   `gorm:"type:varchar(64);not null;default:'OPEN'"`
 	AuthorID  string     `gorm:"type:varchar(100);not null;index"`
 	Reviewers []string   `gorm:"type:jsonb;serializer:json"`

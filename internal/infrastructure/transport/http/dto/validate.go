@@ -7,7 +7,7 @@ const (
 	maxAmountOfTeamMembers = 100
 	maxUsernameLen         = 255
 	maxUserIDLen           = 64
-	maxPRNameLen           = 255
+	maxPRNameLen           = 500
 	maxPRIDLen             = 64
 )
 

@@ -30,8 +30,9 @@ func (h *Handlers) CreateTeam(w http.ResponseWriter, r *http.Request) {
 	team := req.ToDomainTeam()
 	res, err := h.TeamUC.Create(team)
 	if err != nil {
-		// TODO: добавить обработку ошибок
 		logrus.Errorf("failed to create team: %v", err)
+		errInfo := apperrors.HandleError(err)
+		sendErrorResponse(w, r, errInfo.HttdCode, errInfo.Code, errInfo.Msg)
 		return
 	}
 
@@ -50,8 +51,9 @@ func (h *Handlers) GetTeamByName(w http.ResponseWriter, r *http.Request) {
 
 	team, err := h.TeamUC.GetByName(teamName)
 	if err != nil {
-		// TODO: handle err
 		logrus.Errorf("failed to get team: %v", err)
+		errInfo := apperrors.HandleError(err)
+		sendErrorResponse(w, r, errInfo.HttdCode, errInfo.Code, errInfo.Msg)
 		return
 	}
 

@@ -10,11 +10,12 @@ const (
 )
 
 type PullRequest struct {
-	ID        string
-	Title     string
-	Status    PRStatus
-	AuthorID  string
-	Reviewers []string
-	CreatedAt time.Time
-	MergedAt  time.Time
+	ID        string     `gorm:"primaryKey;type:varchar(100)"`
+	Title     string     `gorm:"type:varchar(500);not null"`
+	Status    PRStatus   `gorm:"type:varchar(64);not null;default:'OPEN'"`
+	AuthorID  string     `gorm:"type:varchar(100);not null;index"`
+	Reviewers []string   `gorm:"type:jsonb;serializer:json"`
+	CreatedAt time.Time  `gorm:"autoCreateTime"`
+	MergedAt  *time.Time `gorm:"null"`
+	Author    *User      `gorm:"foreignKey:AuthorID"`
 }

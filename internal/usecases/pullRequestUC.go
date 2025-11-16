@@ -1,16 +1,11 @@
 package usecases
 
 import (
+	apperrors "avitoTestTask/internal/appErrors"
 	"avitoTestTask/internal/core/models"
 	"avitoTestTask/internal/core/repository"
-	"errors"
 	"math/rand"
-)
-
-var (
-	ErrAlreadyMerged = errors.New("already merged")
-	ErrNoCandidate   = errors.New("there aren't available candidates")
-	ErrNotAssigned   = errors.New("user is not assigned to this pull request")
+	"time"
 )
 
 type PullRequestUC struct {
@@ -49,7 +44,20 @@ func (uc *PullRequestUC) GetByReviewer(userID string) ([]models.PullRequest, err
 }
 
 func (uc *PullRequestUC) Merge(prID string) (*models.PullRequest, error) {
-	return uc.PullRequestRepo.Merge(prID)
+	pr, err := uc.PullRequestRepo.GetByID(prID)
+	if err != nil {
+		return nil, err
+	}
+	if pr.Status == models.PRStatusMerged {
+		return pr, nil
+	}
+	now := time.Now()
+	if err := uc.PullRequestRepo.Merge(prID, now); err != nil {
+		return nil, err
+	}
+	pr.Status = models.PRStatusMerged
+	pr.MergedAt = &now
+	return pr, nil
 }
 
 func (uc *PullRequestUC) Reassign(prID, oldUserID string) (*models.PullRequest, error) {
@@ -58,10 +66,10 @@ func (uc *PullRequestUC) Reassign(prID, oldUserID string) (*models.PullRequest, 
 		return nil, err
 	}
 	if pr.Status == models.PRStatusMerged {
-		return nil, ErrAlreadyMerged
+		return nil, apperrors.ErrAlreadyMerged
 	}
 	if !isUserInReviewers(oldUserID, pr.Reviewers) {
-		return nil, ErrNotAssigned
+		return nil, apperrors.ErrNotAssigned
 	}
 
 	oldUser, err := uc.UserRepo.GetByID(oldUserID)
@@ -95,7 +103,7 @@ func (uc *PullRequestUC) findRandomReplacement(authorID string, teamID uint, exi
 	}
 
 	if len(candidates) == 0 {
-		return "", ErrNoCandidate
+		return "", apperrors.ErrNoCandidate
 	}
 	return candidates[rand.Intn(len(candidates))], nil
 }
@@ -114,7 +122,7 @@ func (uc *PullRequestUC) setReviewers(teamID uint, authorID string) ([]string, e
 	}
 
 	if len(candidates) == 0 {
-		return nil, ErrNoCandidate
+		return nil, apperrors.ErrNoCandidate
 	}
 
 	rand.Shuffle(len(candidates), func(i, j int) {

@@ -100,7 +100,7 @@ type PullRequest struct {
 	AuthorID          string          `json:"author_id"`
 	Status            models.PRStatus `json:"status"`
 	AssignedReviewers []string        `json:"assigned_reviewers"`
-	MergedAt          time.Time       `json:"mergedAt,omitempty"`
+	MergedAt          *time.Time      `json:"mergedAt,omitempty"`
 }
 
 func NewCreatePRResponse(pr *models.PullRequest) *CreatePRResponse {

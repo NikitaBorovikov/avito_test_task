@@ -1,4 +1,4 @@
-.PHONY: up down build logs
+.PHONY: up down build rebuild
 
 up:
 	docker-compose up

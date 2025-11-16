@@ -38,7 +38,12 @@ func (r *UserRepo) GetByID(userID string) (*models.User, error) {
 }
 
 func (r *UserRepo) GetActiveUsersByTeam(teamID uint) ([]models.User, error) {
-	return nil, nil
+	var users []models.User
+	err := r.db.Where("team_id = ? AND is_active = ?", teamID, true).First(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }
 
 func (r *UserRepo) SetUserActive(userID string, isActive bool) (*models.User, error) {

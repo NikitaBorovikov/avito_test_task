@@ -30,7 +30,7 @@ func RunServer() {
 	}
 
 	repo := postgres.NewPostgresRepo(db)
-	usecases := usecases.NewUseCases(repo.UserRepo, repo.TeamRepo, repo.PullRequestRepo)
+	usecases := usecases.NewUseCases(repo.UserRepo, repo.TeamRepo, repo.PullRequestRepo, repo.StatsRepo)
 	handlers := handlers.NewHandlers(usecases)
 
 	httpServer := server.NewServer(handlers, &cfg.Server)

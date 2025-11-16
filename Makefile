@@ -1,4 +1,4 @@
-.PHONY: up down build rebuild
+.PHONY: up down build rebuild lint lint-fix
 
 up:
 	docker-compose up
@@ -11,3 +11,9 @@ build:
 
 rebuild:
 	docker-compose build --no-cache
+lint:
+	@echo "Running linter..."
+	golangci-lint run ./...
+lint-fix:
+	@echo "Running linter with auto-fix..."
+	golangci-lint run --fix ./...

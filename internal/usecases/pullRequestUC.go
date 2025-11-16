@@ -5,6 +5,7 @@ import (
 	"avitoTestTask/internal/core/repository"
 	"errors"
 	"math/rand"
+	"time"
 )
 
 var (
@@ -49,7 +50,20 @@ func (uc *PullRequestUC) GetByReviewer(userID string) ([]models.PullRequest, err
 }
 
 func (uc *PullRequestUC) Merge(prID string) (*models.PullRequest, error) {
-	return uc.PullRequestRepo.Merge(prID)
+	pr, err := uc.PullRequestRepo.GetByID(prID)
+	if err != nil {
+		return nil, err
+	}
+	if pr.Status == models.PRStatusMerged {
+		return pr, nil
+	}
+	now := time.Now()
+	if err := uc.PullRequestRepo.Merge(prID, now); err != nil {
+		return nil, err
+	}
+	pr.Status = models.PRStatusMerged
+	pr.MergedAt = &now
+	return pr, nil
 }
 
 func (uc *PullRequestUC) Reassign(prID, oldUserID string) (*models.PullRequest, error) {
